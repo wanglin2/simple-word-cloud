@@ -1,4 +1,4 @@
-import workerCode from './worker?raw'
+import computeCode from './compute?raw'
 import { createWorker } from './utils'
 
 class Layout {
@@ -7,7 +7,7 @@ class Layout {
     this.elWidth = elWidth
     this.elHeight = elHeight
     this.done = done
-    this.worker = createWorker(workerCode)
+    this.worker = createWorker(computeCode)
 
     this.run()
   }
@@ -41,7 +41,7 @@ class Layout {
         run()
         return
       }
-      const res = await this.postMessage('check', {
+      const res = await this.postMessage('getPosition', {
         curWordItem,
         elWidth: this.elWidth,
         elHeight: this.elHeight

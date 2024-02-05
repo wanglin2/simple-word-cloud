@@ -19,81 +19,89 @@ export const getColor = () => {
 }
 
 // 拼接font字符串
-export const joinFontStr = ({ italic, bold, fontSize, fontFamily }) => {
-  return `${italic ? 'italic ' : ''} ${
-    bold ? 'bold ' : ''
-  } ${fontSize}px ${fontFamily} `
+export const joinFontStr = ({ fontSize, fontFamily, fontWeight }) => {
+  return `${fontWeight} ${fontSize}px ${fontFamily} `
 }
 
-//计算节点的文本长宽
+//计算文本宽高
 let measureTextContext = null
-export const measureText = (text, { italic, bold, fontSize, fontFamily }) => {
-  const font = joinFontStr({
-    italic,
-    bold,
-    fontSize,
-    fontFamily
-  })
+export const measureText = (text, fontStyle) => {
+  // 创建一个canvas用于测量
   if (!measureTextContext) {
     const canvas = document.createElement('canvas')
     measureTextContext = canvas.getContext('2d')
   }
   measureTextContext.save()
-  measureTextContext.font = font
+  // 设置文本样式
+  measureTextContext.font = joinFontStr(fontStyle)
+  // 测量文本
   const { width, actualBoundingBoxAscent, actualBoundingBoxDescent } =
     measureTextContext.measureText(text)
   measureTextContext.restore()
+  // 返回文本宽高
   const height = actualBoundingBoxAscent + actualBoundingBoxDescent
   return { width, height }
 }
 
 // 获取文字的像素点数据
-export const getImageData = ({ text, fontSize, fontFamily }) => {
-  fontSize = fontSize / 2
+export const getTextImageData = (text, fontStyle) => {
   const canvas = document.createElement('canvas')
-  let { width, height } = measureText(text, { fontSize, fontFamily })
+  // 获取文本的宽高，并向上取整
+  let { width, height } = measureText(text, fontStyle)
   width = Math.ceil(width)
   height = Math.ceil(height)
   canvas.width = width
   canvas.height = height
-  console.log(width, height)
   const ctx = canvas.getContext('2d')
+  // 绘制文本
   ctx.translate(width / 2, height / 2)
-  const font = joinFontStr({
-    fontSize,
-    fontFamily
-  })
-  ctx.font = font
+  ctx.font = joinFontStr(fontStyle)
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.fillText(text, 0, 0)
+  // 获取画布的像素数据
   const image = ctx.getImageData(0, 0, width, height).data
+  // 遍历每个像素点，找出有内容的像素点
   const imageData = []
-  let minx = Infinity
-  let maxx = -Infinity
-  let miny = Infinity
-  let maxy = -Infinity
-  for (let i = 0; i < width; i++) {
-    for (let j = 0; j < height; j++) {
-      const a = image[i * 4 + j * (width * 4) + 3]
+  // let minx = Infinity
+  // let maxx = -Infinity
+  // let miny = Infinity
+  // let maxy = -Infinity
+  for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height; y++) {
+      // 如果a通道不为0，那么代表该像素点存在内容
+      const a = image[x * 4 + y * (width * 4) + 3]
       if (a > 0) {
-        imageData.push([i, j])
-        minx = Math.min(i, minx)
-        maxx = Math.max(i, maxx)
-        miny = Math.min(j, miny)
-        maxy = Math.max(j, maxy)
+        imageData.push([x, y])
+        // minx = Math.min(x, minx)
+        // maxx = Math.max(x, maxx)
+        // miny = Math.min(y, miny)
+        // maxy = Math.max(y, maxy)
       }
     }
   }
   return {
     data: imageData,
-    minx,
-    maxx,
-    miny,
-    maxy
+    width,
+    height
   }
 }
 
 export const createWorker = code => {
   return new Worker(URL.createObjectURL(new Blob([code])))
+}
+
+// 根据权重计算字号
+export const getFontSize = (
+  weight,
+  minWeight,
+  maxWeight,
+  minFontSize,
+  maxFontSize
+) => {
+  return (
+    minFontSize +
+    ((weight - minWeight) / (maxWeight - minWeight)) *
+      (maxFontSize - minFontSize)
+  )
 }

@@ -1,68 +1,33 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import exampleData from './example'
-import WordItem from './WordItem'
-import Layout from './Layout'
-import { getColor } from './utils'
+import WordCloud from './WordCloud'
 
 const startTime = Date.now()
 
-// 字号区间
-const minFontSize = 12
-const maxFontSize = 50
-
-// 按权重排序
-const wordList = [...exampleData].sort((a, b) => {
-  return a[1] - b[1]
-})
-console.log(wordList)
-const wordItemList = wordList
-  .map((item, index) => {
-    return new WordItem({
-      text: item[0],
-      weight: item[1],
-      fontSize:
-        minFontSize +
-        Math.floor(
-          ((index + 1) / wordList.length) * (maxFontSize - minFontSize)
-        ),
-      fontFamily: '微软雅黑',
-      color: getColor()
-    })
-  })
-  .reverse()
-console.log(wordItemList)
-
+const el = ref(null)
 const list = ref([])
 const duration = ref(0)
 
-// 布局计算
-new Layout({
-  wordItemList,
-  elWidth: 600,
-  elHeight: 400,
-  done: () => {
-    list.value = wordItemList.map(item => {
-      return {
-        text: item.text,
-        left: item.left * 2,
-        top: item.top * 2,
-        fontSize: item.fontSize,
-        color: item.color,
-        fontFamily: item.fontFamily
-      }
-    })
+onMounted(() => {
+  const wordCloud = new WordCloud({
+    el: el.value,
+    // minFontSize: 30,
+    // maxFontSize: 40
+  })
+  wordCloud.start(exampleData, res => {
+    list.value = res
     console.log(list.value)
 
     const endTime = Date.now()
     duration.value = (endTime - startTime) / 1000
-  }
+  })
 })
 </script>
 
 <template>
   <div>共耗时：{{ duration }}秒</div>
-  <div class="container">
+  <div class="container" ref="el">
     <div
       class="wordItem"
       v-for="(item, index) in list"
@@ -70,8 +35,9 @@ new Layout({
       :style="{
         left: item.left + 'px',
         top: item.top + 'px',
-        fontSize: item.fontSize + 'px',
-        fontFamily: item.fontFamily,
+        fontSize: item.fontStyle.fontSize + 'px',
+        fontFamily: item.fontStyle.fontFamily,
+        fontWeight: item.fontStyle.fontWeight,
         color: item.color
       }"
     >
