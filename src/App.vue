@@ -11,18 +11,35 @@ const duration = ref(0)
 
 onMounted(() => {
   const wordCloud = new WordCloud({
-    el: el.value,
+    el: el.value
     // space: 0.2,
     // minFontSize: 30,
-    // maxFontSize: 40
+    // maxFontSize: 40,
+    // fontWeight: 'bold',
+    // fontSizeScale: 0.1
   })
-  wordCloud.run(exampleData, res => {
-    list.value = res
-    console.log(list.value)
+  wordCloud.run(
+    exampleData.map(item => {
+      return [
+        ...item,
+        {
+          // rotate: -45,
+          rotate: Math.random() > 0.5 ? -90 : 0
+          // rotate: Math.floor(Math.random() * 360),
+          // space: 0,
+          // fontFamily: '',
+          // fontWeight: ''
+        }
+      ]
+    }),
+    res => {
+      list.value = res
+      console.log(list.value)
 
-    const endTime = Date.now()
-    duration.value = (endTime - startTime) / 1000
-  })
+      const endTime = Date.now()
+      duration.value = (endTime - startTime) / 1000
+    }
+  )
 })
 </script>
 
@@ -30,20 +47,39 @@ onMounted(() => {
   <div>共耗时：{{ duration }}秒</div>
   <div class="container" ref="el">
     <div
-      class="wordItem"
+      class="wordItemWrap"
       v-for="(item, index) in list"
       :key="index"
       :style="{
         left: item.left + 'px',
         top: item.top + 'px',
-        fontSize: item.fontStyle.fontSize + 'px',
-        fontFamily: item.fontStyle.fontFamily,
-        fontWeight: item.fontStyle.fontWeight,
-        color: item.color
+        width: item.width + 'px',
+        height: item.height + 'px'
       }"
     >
-      {{ item.text }}
+      <div
+        class="wordItem"
+        :style="{
+          fontSize: item.fontStyle.fontSize + 'px',
+          fontFamily: item.fontStyle.fontFamily,
+          fontWeight: item.fontStyle.fontWeight,
+          color: item.color,
+          transform: `rotate(${item.rotate}deg)`
+        }"
+      >
+        {{ item.text }}
+      </div>
     </div>
+    <!-- <div
+      class="wordItemDot"
+      v-for="(item, index) in list"
+      :key="index"
+      :style="{
+        left: item.left + 'px',
+        top: item.top + 'px',
+        backgroundColor: item.color
+      }"
+    ></div> -->
   </div>
 </template>
 
@@ -55,9 +91,22 @@ onMounted(() => {
   margin: 200px auto;
   position: relative;
 
-  .wordItem {
+  .wordItemWrap {
     position: absolute;
-    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .wordItem {
+      white-space: nowrap;
+    }
+  }
+
+  .wordItemDot {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
   }
 }
 </style>

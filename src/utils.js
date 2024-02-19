@@ -44,18 +44,24 @@ export const measureText = (text, fontStyle) => {
 }
 
 // 获取文字的像素点数据
-export const getTextImageData = (text, fontStyle, space = 0) => {
+export const getTextImageData = (text, fontStyle, space = 0, rotate = 0) => {
   const canvas = document.createElement('canvas')
   const lineWidth = space * fontStyle.fontSize * 2
   // 获取文本的宽高，并向上取整
   let { width, height } = measureText(text, fontStyle, lineWidth)
-  width = Math.ceil(width + lineWidth)
-  height = Math.ceil(height + lineWidth)
+  const rect = getRotateBoundingRect(
+    width + lineWidth,
+    height + lineWidth,
+    rotate
+  )
+  width = rect.width
+  height = rect.height
   canvas.width = width
   canvas.height = height
   const ctx = canvas.getContext('2d')
   // 绘制文本
   ctx.translate(width / 2, height / 2)
+  ctx.rotate(degToRad(rotate))
   ctx.font = joinFontStr(fontStyle)
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
@@ -109,4 +115,20 @@ export const getFontSize = (
     ((weight - minWeight) / (maxWeight - minWeight)) *
       (maxFontSize - minFontSize)
   )
+}
+
+// 计算旋转后的矩形的宽高
+const getRotateBoundingRect = (width, height, rotate) => {
+  const rad = degToRad(rotate)
+  const w = width * Math.abs(Math.cos(rad)) + height * Math.abs(Math.sin(rad))
+  const h = width * Math.abs(Math.sin(rad)) + height * Math.abs(Math.cos(rad))
+  return {
+    width: Math.ceil(w),
+    height: Math.ceil(h)
+  }
+}
+
+// 角度转弧度
+const degToRad = deg => {
+  return (deg * Math.PI) / 180
 }

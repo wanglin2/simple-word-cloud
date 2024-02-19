@@ -26,9 +26,9 @@ class WordCloud {
     // 加粗
     this.fontWeight = fontWeight || ''
     // 间距
-    this.space = space || 0
+    this.space = space || 0.1
     // 文字整体的缩小比例，用于加快计算速度，一般是0-1之间的小数
-    this.fontSizeScale = fontSizeScale || 0.1
+    this.fontSizeScale = fontSizeScale || 1 / this.minFontSize
   }
 
   // 开始计算
@@ -43,10 +43,12 @@ class WordCloud {
     const wordItemList = wordList.map(item => {
       const text = item[0]
       const weight = item[1]
+      const config = item[2] || {}
       return new WordItem({
         text,
         weight,
-        space: this.space,
+        space: config.space || this.space,
+        rotate: config.rotate || 0,
         fontStyle: {
           fontSize:
             getFontSize(
@@ -56,8 +58,8 @@ class WordCloud {
               this.minFontSize,
               this.maxFontSize
             ) * this.fontSizeScale,
-          fontFamily: this.fontFamily,
-          fontWeight: this.fontWeight
+          fontFamily: config.fontFamily || this.fontFamily,
+          fontWeight: config.fontWeight || this.fontWeight
         }
       })
     })
@@ -69,7 +71,10 @@ class WordCloud {
         left: item.left,
         top: item.top,
         color: item.color,
-        fontStyle: item.fontStyle
+        fontStyle: item.fontStyle,
+        rotate: item.rotate,
+        width: item.width,
+        height: item.height
       }
     })
     done(res)
@@ -130,6 +135,8 @@ class WordCloud {
       item.top *= scale
       item.left += offsetX
       item.top += offsetY
+      item.width *= scale
+      item.height *= scale
       item.fontStyle.fontSize *= scale
     })
   }

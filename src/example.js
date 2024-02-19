@@ -68,7 +68,7 @@ let words = [
   '花瓣',
   '同花顺'
 ]
-// words = words.slice(0, 10)
+// words = words.slice(0, 20)
 words = words.slice(0, words.length)
 
 const data = words.map(item => {
