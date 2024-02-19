@@ -98,10 +98,6 @@ export const getTextImageData = (text, fontStyle, space = 0, rotate = 0) => {
   }
 }
 
-export const createWorker = code => {
-  return new Worker(URL.createObjectURL(new Blob([code])))
-}
-
 // 根据权重计算字号
 export const getFontSize = (
   weight,

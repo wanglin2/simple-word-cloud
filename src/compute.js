@@ -122,21 +122,3 @@ const canFit = (curWordItem, [cx, cy]) => {
     return !pxMap[`${left}|${top}`]
   })
 }
-
-// this.addEventListener('message', e => {
-//   const action = e.data.action
-//   const data = e.data.data
-//   if (e.data.action === 'getPosition') {
-//     let startTime = Date.now()
-//     const res = getPosition(data)
-//     this.postMessage({
-//       action,
-//       data: res
-//     })
-//   } else if (e.data.action === 'addToMap') {
-//     addToMap(data)
-//     this.postMessage({
-//       action
-//     })
-//   }
-// })
