@@ -4,7 +4,14 @@ import { addToMap, getPosition, getBoundingRect } from './compute'
 
 // 词云类
 class WordCloud {
-  constructor({ el, minFontSize, maxFontSize, fontFamily, fontWeight }) {
+  constructor({
+    el,
+    minFontSize,
+    maxFontSize,
+    fontFamily,
+    fontWeight,
+    fontSizeScale
+  }) {
     // 词云渲染的容器元素
     this.el = el
     const elRect = el.getBoundingClientRect()
@@ -17,10 +24,12 @@ class WordCloud {
     this.fontFamily = fontFamily || '微软雅黑'
     // 加粗
     this.fontWeight = fontWeight || ''
+    // 文字整体的缩小比例，用于加快计算速度，一般是0-1之间的小数
+    this.fontSizeScale = fontSizeScale || 0.5
   }
 
   // 开始计算
-  start(words = [], done = () => {}) {
+  run(words = [], done = () => {}) {
     // 按权重从大到小排序
     const wordList = [...words].sort((a, b) => {
       return b[1] - a[1]
@@ -35,13 +44,14 @@ class WordCloud {
         text,
         weight,
         fontStyle: {
-          fontSize: getFontSize(
-            weight,
-            minWeight,
-            maxWeight,
-            this.minFontSize,
-            this.maxFontSize
-          ),
+          fontSize:
+            getFontSize(
+              weight,
+              minWeight,
+              maxWeight,
+              this.minFontSize,
+              this.maxFontSize
+            ) * this.fontSizeScale,
           fontFamily: this.fontFamily,
           fontWeight: this.fontWeight
         }

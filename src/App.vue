@@ -15,7 +15,7 @@ onMounted(() => {
     // minFontSize: 30,
     // maxFontSize: 40
   })
-  wordCloud.start(exampleData, res => {
+  wordCloud.run(exampleData, res => {
     list.value = res
     console.log(list.value)
 
