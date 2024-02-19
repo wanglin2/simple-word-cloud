@@ -12,6 +12,7 @@ const duration = ref(0)
 onMounted(() => {
   const wordCloud = new WordCloud({
     el: el.value,
+    // space: 0.2,
     // minFontSize: 30,
     // maxFontSize: 40
   })

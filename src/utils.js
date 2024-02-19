@@ -44,12 +44,13 @@ export const measureText = (text, fontStyle) => {
 }
 
 // 获取文字的像素点数据
-export const getTextImageData = (text, fontStyle) => {
+export const getTextImageData = (text, fontStyle, space = 0) => {
   const canvas = document.createElement('canvas')
+  const lineWidth = space * fontStyle.fontSize * 2
   // 获取文本的宽高，并向上取整
-  let { width, height } = measureText(text, fontStyle)
-  width = Math.ceil(width)
-  height = Math.ceil(height)
+  let { width, height } = measureText(text, fontStyle, lineWidth)
+  width = Math.ceil(width + lineWidth)
+  height = Math.ceil(height + lineWidth)
   canvas.width = width
   canvas.height = height
   const ctx = canvas.getContext('2d')
@@ -59,6 +60,10 @@ export const getTextImageData = (text, fontStyle) => {
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.fillText(text, 0, 0)
+  if (lineWidth > 0) {
+    ctx.lineWidth = lineWidth
+    ctx.strokeText(text, 0, 0)
+  }
   // 获取画布的像素数据
   const image = ctx.getImageData(0, 0, width, height).data
   // 遍历每个像素点，找出有内容的像素点

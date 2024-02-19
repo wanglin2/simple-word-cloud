@@ -10,7 +10,8 @@ class WordCloud {
     maxFontSize,
     fontFamily,
     fontWeight,
-    fontSizeScale
+    fontSizeScale,
+    space
   }) {
     // 词云渲染的容器元素
     this.el = el
@@ -24,8 +25,10 @@ class WordCloud {
     this.fontFamily = fontFamily || '微软雅黑'
     // 加粗
     this.fontWeight = fontWeight || ''
+    // 间距
+    this.space = space || 0
     // 文字整体的缩小比例，用于加快计算速度，一般是0-1之间的小数
-    this.fontSizeScale = fontSizeScale || 0.5
+    this.fontSizeScale = fontSizeScale || 0.1
   }
 
   // 开始计算
@@ -43,6 +46,7 @@ class WordCloud {
       return new WordItem({
         text,
         weight,
+        space: this.space,
         fontStyle: {
           fontSize:
             getFontSize(
