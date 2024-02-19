@@ -14,8 +14,8 @@ const colorList = [
   '#461e47',
   '#ff4e69'
 ]
-export const getColor = () => {
-  return colorList[Math.floor(Math.random() * colorList.length)]
+export const getColor = (list = colorList) => {
+  return list[Math.floor(Math.random() * list.length)]
 }
 
 // 拼接font字符串

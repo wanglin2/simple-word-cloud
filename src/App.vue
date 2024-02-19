@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import exampleData from './example'
-import WordCloud from './WordCloud'
+import SimpleWordCloud from 'simple-word-cloud'
 
 const startTime = Date.now()
 
@@ -10,13 +10,14 @@ const list = ref([])
 const duration = ref(0)
 
 onMounted(() => {
-  const wordCloud = new WordCloud({
+  const wordCloud = new SimpleWordCloud({
     el: el.value
     // space: 0.2,
     // minFontSize: 30,
     // maxFontSize: 40,
     // fontWeight: 'bold',
-    // fontSizeScale: 0.1
+    // fontSizeScale: 0.1,
+    // colorList: []
   })
   wordCloud.run(
     exampleData.map(item => {
@@ -28,7 +29,8 @@ onMounted(() => {
           // rotate: Math.floor(Math.random() * 360),
           // space: 0,
           // fontFamily: '',
-          // fontWeight: ''
+          // fontWeight: '',
+          // color: ''
         }
       ]
     }),

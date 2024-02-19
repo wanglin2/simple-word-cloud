@@ -2,7 +2,7 @@ import { getTextImageData, getColor } from './utils'
 
 // 文本类
 class WordItem {
-  constructor({ text, weight, fontStyle, color, space, rotate }) {
+  constructor({ text, weight, fontStyle, color, space, rotate, colorList }) {
     // 文本
     this.text = text
     // 权重
@@ -10,7 +10,7 @@ class WordItem {
     // 字体样式
     this.fontStyle = fontStyle
     // 文本颜色
-    this.color = color || getColor()
+    this.color = color || getColor(colorList)
     // 间距
     this.space = space || 0
     // 旋转角度

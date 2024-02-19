@@ -1,6 +1,6 @@
-import WordItem from './WordItem'
-import { getFontSize } from './utils'
-import { addToMap, getPosition, getBoundingRect } from './compute'
+import WordItem from './src/WordItem'
+import { getFontSize } from './src/utils'
+import { addToMap, getPosition, getBoundingRect } from './src/compute'
 
 // 词云类
 class WordCloud {
@@ -11,7 +11,8 @@ class WordCloud {
     fontFamily,
     fontWeight,
     fontSizeScale,
-    space
+    space,
+    colorList
   }) {
     // 词云渲染的容器元素
     this.el = el
@@ -27,6 +28,8 @@ class WordCloud {
     this.fontWeight = fontWeight || ''
     // 间距
     this.space = space || 0.1
+    // 文字颜色列表
+    this.colorList = colorList
     // 文字整体的缩小比例，用于加快计算速度，一般是0-1之间的小数
     this.fontSizeScale = fontSizeScale || 1 / this.minFontSize
   }
@@ -49,6 +52,8 @@ class WordCloud {
         weight,
         space: config.space || this.space,
         rotate: config.rotate || 0,
+        color: config.color,
+        colorList: this.colorList,
         fontStyle: {
           fontSize:
             getFontSize(
@@ -78,6 +83,13 @@ class WordCloud {
       }
     })
     done(res)
+  }
+
+  // 直接渲染到容器内
+  render(words, done) {
+    this.run(words, list => {
+
+    })
   }
 
   // 计算文本的位置
