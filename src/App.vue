@@ -15,7 +15,7 @@ const rotateType = ref('none')
 const minFontSize = ref(12)
 const maxFontSize = ref(40)
 const fontFamily = ref('微软雅黑, Microsoft YaHei')
-const italic = ref('')
+const italic = ref(false)
 const space = ref(0)
 
 const el = ref(null)
