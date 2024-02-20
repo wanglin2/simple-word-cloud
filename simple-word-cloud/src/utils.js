@@ -19,8 +19,13 @@ export const getColor = (list = colorList) => {
 }
 
 // 拼接font字符串
-export const joinFontStr = ({ fontSize, fontFamily, fontWeight }) => {
-  return `${fontWeight} ${fontSize}px ${fontFamily} `
+export const joinFontStr = ({
+  fontSize,
+  fontFamily,
+  fontWeight,
+  fontStyle
+}) => {
+  return `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily} `
 }
 
 //计算文本宽高
@@ -43,19 +48,38 @@ export const measureText = (text, fontStyle) => {
   return { width, height }
 }
 
-// 获取文字的像素点数据
-export const getTextImageData = (text, fontStyle, space = 0, rotate = 0) => {
-  const canvas = document.createElement('canvas')
+// 获取文本的外包围框大小
+export const getTextBoundingRect = ({
+  text,
+  fontStyle,
+  space,
+  rotate
+} = {}) => {
   const lineWidth = space * fontStyle.fontSize * 2
   // 获取文本的宽高，并向上取整
-  let { width, height } = measureText(text, fontStyle, lineWidth)
+  const { width, height } = measureText(text, fontStyle)
   const rect = getRotateBoundingRect(
     width + lineWidth,
     height + lineWidth,
     rotate
   )
-  width = rect.width
-  height = rect.height
+  return {
+    ...rect,
+    lineWidth
+  }
+}
+
+// 获取文字的像素点数据
+export const getTextImageData = ({ text, fontStyle, space, rotate }) => {
+  space = space || 0
+  rotate = rotate || 0
+  const canvas = document.createElement('canvas')
+  const { lineWidth, width, height } = getTextBoundingRect({
+    text,
+    fontStyle,
+    space,
+    rotate
+  })
   canvas.width = width
   canvas.height = height
   const ctx = canvas.getContext('2d')
@@ -74,20 +98,12 @@ export const getTextImageData = (text, fontStyle, space = 0, rotate = 0) => {
   const image = ctx.getImageData(0, 0, width, height).data
   // 遍历每个像素点，找出有内容的像素点
   const imageData = []
-  // let minx = Infinity
-  // let maxx = -Infinity
-  // let miny = Infinity
-  // let maxy = -Infinity
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
       // 如果a通道不为0，那么代表该像素点存在内容
       const a = image[x * 4 + y * (width * 4) + 3]
       if (a > 0) {
         imageData.push([x, y])
-        // minx = Math.min(x, minx)
-        // maxx = Math.max(x, maxx)
-        // miny = Math.min(y, miny)
-        // maxy = Math.max(y, maxy)
       }
     }
   }
@@ -114,7 +130,7 @@ export const getFontSize = (
 }
 
 // 计算旋转后的矩形的宽高
-const getRotateBoundingRect = (width, height, rotate) => {
+export const getRotateBoundingRect = (width, height, rotate) => {
   const rad = degToRad(rotate)
   const w = width * Math.abs(Math.cos(rad)) + height * Math.abs(Math.sin(rad))
   const h = width * Math.abs(Math.sin(rad)) + height * Math.abs(Math.cos(rad))
@@ -125,6 +141,11 @@ const getRotateBoundingRect = (width, height, rotate) => {
 }
 
 // 角度转弧度
-const degToRad = deg => {
+export const degToRad = deg => {
   return (deg * Math.PI) / 180
+}
+
+// 返回一个随机整数
+export const createRandom = (min, max) => {
+  return min + Math.floor(Math.random() * (max - min))
 }

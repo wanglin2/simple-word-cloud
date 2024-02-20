@@ -1,4 +1,4 @@
-const pxMap = {}
+let pxMap = {}
 let centerX = -1
 let centerY = -1
 let left = Infinity

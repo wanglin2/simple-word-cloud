@@ -73,11 +73,7 @@ words = words.slice(0, words.length)
 
 const data = words.map(item => {
   const weight = Math.floor(Math.random() * 100)
-  return [item + weight, weight]
+  return [item, weight]
 })
-
-console.log(data.map((item) => {
-  return item[0] + ' ' + item[1]
-}).join('\n'))
 
 export default data
