@@ -66,7 +66,7 @@ class WordCloud {
     // 文字整体的缩小比例，用于加快计算速度，一般是0-1之间的小数
     this.fontSizeScale = fontSizeScale || 1 / this.minFontSize
     // 文本元素过渡动画
-    this.transition = transition || 'all 0.5s'
+    this.transition = transition || 'all 0.5s ease'
     // 按权重从小到大的顺序渲染，默认是按权重从大到小进行渲染
     this.smallWeightInCenter = smallWeightInCenter || false
   }
@@ -156,7 +156,6 @@ class WordCloud {
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: ${this.transition};
             left: ${this.elWidth / 2}px;
             top: ${this.elHeight / 2}px;
           `
@@ -177,6 +176,7 @@ class WordCloud {
           wrap.style.top = `${item.top}px`
           wrap.style.width = `${item.width}px`
           wrap.style.height = `${item.height}px`
+          wrap.style.transition = this.transition
 
           inner.style.fontSize = `${item.fontStyle.fontSize}px`
           inner.style.fontFamily = `${item.fontStyle.fontFamily}`

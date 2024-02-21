@@ -66,7 +66,19 @@ let words = [
   '蚂蚁金服',
   '菜鸟',
   '花瓣',
-  '同花顺'
+  '同花顺',
+  'google',
+  'Apple',
+  'Microsoft',
+  'Amazon',
+  'Facebook',
+  'Oracle',
+  'Netflix',
+  'Reddit',
+  'Yelp',
+  'adobe',
+  'nasdaq',
+  'hewlett'
 ]
 // words = words.slice(0, 20)
 words = words.slice(0, words.length)

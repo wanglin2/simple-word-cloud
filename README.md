@@ -53,7 +53,7 @@ const wordCloud = new SimpleWordCloud(options)
 | colorList           | Array            | 见下方                    | 文字颜色列表                                                 |
 | rotateType          | String           | none                      | 旋转类型，none（无）、cross（交叉，即要么是无旋转，要么是-90度旋转）、oblique（倾斜，即-45度旋转）、random（随机。即-90度到90度之间），如果要针对某个文本 |
 | fontSizeScale       | Number           | 1 / minFontSize           | 计算时文字整体的缩小比例，用于加快计算速度，一般是0-1之间的小数，如果你没有非常清楚该配置的功能，那么请不要修改 |
-| transition          | String           | all 0.5s                  | 文本元素过渡动画，css的transition属性                        |
+| transition          | String           | all 0.5s ease             | 文本元素过渡动画，css的transition属性                        |
 | smallWeightInCenter | Boolean          | false                     | 按权重从小到大的顺序渲染，默认是按权重从大到小进行渲染       |
 
 ##### 默认颜色列表

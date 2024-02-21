@@ -1,8 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import exampleData from './example'
 import SimpleWordCloud from 'simple-word-cloud'
-import { fontFamilyList } from './constant'
+import { fontFamilyList, colorsList, transitionList } from './constant'
 
 const wordStr = ref(
   exampleData
@@ -17,6 +17,11 @@ const maxFontSize = ref(40)
 const fontFamily = ref('微软雅黑, Microsoft YaHei')
 const italic = ref(false)
 const space = ref(0)
+const colorIndex = ref(0)
+const colorList = computed(() => {
+  return colorsList[colorIndex.value]
+})
+const transition = ref('ease')
 
 const el = ref(null)
 const duration = ref(0)
@@ -36,13 +41,16 @@ const createWordList = () => {
 const render = () => {
   duration.value = 0
   const startTime = Date.now()
+  console.log(transition.value)
   wordCloud.updateOption({
     rotateType: rotateType.value,
     minFontSize: minFontSize.value,
     maxFontSize: maxFontSize.value,
     fontFamily: fontFamily.value,
     fontStyle: italic.value ? 'italic' : '',
-    space: space.value
+    space: space.value,
+    colorList: colorList.value,
+    transition: 'all 0.5s ' + transition.value
   })
   wordCloud.render(createWordList(), res => {
     const endTime = Date.now()
@@ -78,6 +86,68 @@ onMounted(() => {
           type="textarea"
           placeholder="一行代表一个词，词和权重用空格分隔"
         />
+        <h3>旋转</h3>
+        <div class="row">
+          <el-radio-group v-model="rotateType">
+            <el-radio-button label="none">无</el-radio-button>
+            <el-radio-button label="cross">交叉</el-radio-button>
+            <el-radio-button label="oblique">倾斜</el-radio-button>
+            <el-radio-button label="random">随机</el-radio-button>
+          </el-radio-group>
+        </div>
+        <h3>字体</h3>
+        <div class="row">
+          <el-select v-model="fontFamily">
+            <el-option
+              v-for="item in fontFamilyList"
+              :key="item"
+              :label="item"
+              :value="item"
+            >
+              <span :style="{ fontFamily: item }">{{ item }}</span>
+            </el-option>
+          </el-select>
+        </div>
+        <h3>色系</h3>
+        <div class="row">
+          <el-radio-group v-model="colorIndex">
+            <el-radio-button
+              class="colorRadio"
+              v-for="(list, index) in colorsList"
+              :key="index"
+              :label="index"
+            >
+              <div class="colorList">
+                <div
+                  class="colorItem"
+                  v-for="color in list"
+                  :key="color"
+                  :style="{ backgroundColor: color }"
+                ></div>
+              </div>
+            </el-radio-button>
+          </el-radio-group>
+        </div>
+        <h3>动画</h3>
+        <div class="row">
+          <el-select v-model="transition">
+            <el-option
+              v-for="item in transitionList"
+              :key="item"
+              :label="item"
+              :value="item"
+            >
+            </el-option>
+          </el-select>
+        </div>
+        <h3>间距比例</h3>
+        <div class="row">
+          <el-slider v-model="space" :max="1" :step="0.1" />
+        </div>
+        <h3>斜体</h3>
+        <div class="row">
+          <el-switch v-model="italic" />
+        </div>
         <h3>字号</h3>
         <div class="row">
           最小：<el-input-number v-model="minFontSize" :min="12" :max="100" />
@@ -88,34 +158,6 @@ onMounted(() => {
             :min="minFontSize"
             :max="100"
           />
-        </div>
-        <h3>字体</h3>
-        <div class="row">
-          <el-select v-model="fontFamily">
-            <el-option
-              v-for="item in fontFamilyList"
-              :key="item"
-              :label="item"
-              :value="item"
-            />
-          </el-select>
-        </div>
-        <h3>斜体</h3>
-        <div class="row">
-          <el-switch v-model="italic" />
-        </div>
-        <h3>间距比例</h3>
-        <div class="row">
-          <el-slider v-model="space" :max="1" :step="0.1" />
-        </div>
-        <h3>旋转</h3>
-        <div class="row">
-          <el-radio-group v-model="rotateType">
-            <el-radio-button label="none">无</el-radio-button>
-            <el-radio-button label="cross">交叉</el-radio-button>
-            <el-radio-button label="oblique">倾斜</el-radio-button>
-            <el-radio-button label="random">随机</el-radio-button>
-          </el-radio-group>
         </div>
       </div>
       <div class="btnBox">
@@ -180,6 +222,23 @@ onMounted(() => {
 
       .row {
         margin-bottom: 12px;
+
+        /deep/ .colorRadio {
+          .el-radio-button__inner {
+            padding: 5px;
+          }
+        }
+
+        .colorList {
+          width: 35px;
+          display: flex;
+          height: 30px;
+
+          .colorItem {
+            width: 100%;
+            height: 100%;
+          }
+        }
       }
     }
 

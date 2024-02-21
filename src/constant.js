@@ -4,6 +4,27 @@ export const fontFamilyList = [
   '楷体, 楷体_GB2312, SimKai, STKaiti',
   '黑体, SimHei, Heiti SC',
   '隶书, SimLi',
+  'Abril Fatface',
+  'Annie Use Your Telescope',
+  'Anton',
+  'Bahiana',
+  'Baloo Bhaijaan',
+  'Barrio',
+  'Finger Paint',
+  'Fredericka the Great',
+  'Gloria Hallelujah',
+  'Indie Flower',
+  'Life Savers',
+  'Londrina Sketch',
+  'Love Ya Like A Sister',
+  'Merienda',
+  'Nothing You Could Do',
+  'Pacifico',
+  'Quicksand',
+  'Righteous',
+  'Roboto',
+  'Sacramento',
+  'Shadows Into Light',
   'andale mono',
   'arial, helvetica, sans-serif',
   'arial black, avant garde',
@@ -11,5 +32,43 @@ export const fontFamilyList = [
   'impact, chicago',
   'times new roman',
   'sans-serif',
-  'serif'
+  'serif',
+  'Lato',
+  'Montserrat',
+  'Oswald',
+  'Source Sans Pro',
+  'Merriweather',
+  'Concert One',
+  'Long Cang'
+]
+
+export const colorsList = [
+  [
+    '#326BFF',
+    '#5C27FE',
+    '#C165DD',
+    '#FACD68',
+    '#FC76B3',
+    '#1DE5E2',
+    '#B588F7',
+    '#08C792',
+    '#FF7B02',
+    '#3bc4c7',
+    '#3a9eea',
+    '#461e47',
+    '#ff4e69'
+  ],
+  ['#d99cd1', '#c99cd1', '#b99cd1', '#a99cd1'],
+  ['#403030', '#f97a7a'],
+  ['#31a50d', '#d1b022', '#74482a'],
+  ['#ffd077', '#3bc4c7', '#3a9eea', '#ff4e69', '#461e47']
+]
+
+export const transitionList = [
+  'ease',
+  'linear',
+  'ease-in',
+  'ease-out',
+  'ease-in-out',
+  'cubic-bezier(0.1,0.7,1.0,0.1)'
 ]
