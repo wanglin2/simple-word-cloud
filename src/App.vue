@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import exampleData from './example'
 import SimpleWordCloud from 'simple-word-cloud'
 import { fontFamilyList, colorsList, transitionList } from './constant'
+import { ElMessage } from 'element-plus'
 
 const wordStr = ref(
   exampleData
@@ -11,6 +12,9 @@ const wordStr = ref(
     })
     .join('\n')
 )
+
+const lastRenderType = ref('DOM')
+const renderType = ref('DOM')
 const rotateType = ref('none')
 const minFontSize = ref(12)
 const maxFontSize = ref(40)
@@ -39,9 +43,12 @@ const createWordList = () => {
 
 // 渲染
 const render = () => {
+  if (lastRenderType.value !== renderType.value) {
+    lastRenderType.value = renderType.value
+    wordCloud.clear()
+  }
   duration.value = 0
   const startTime = Date.now()
-  console.log(transition.value)
   wordCloud.updateOption({
     rotateType: rotateType.value,
     minFontSize: minFontSize.value,
@@ -50,12 +57,23 @@ const render = () => {
     fontStyle: italic.value ? 'italic' : '',
     space: space.value,
     colorList: colorList.value,
-    transition: 'all 0.5s ' + transition.value
+    transition: 'all 0.5s ' + transition.value,
+    onClick: item => {
+      ElMessage('点击了' + item.text)
+    }
   })
-  wordCloud.render(createWordList(), res => {
-    const endTime = Date.now()
-    duration.value = (endTime - startTime) / 1000
-  })
+  wordCloud[renderType.value === 'DOM' ? 'render' : 'renderUseCanvas'](
+    createWordList(),
+    res => {
+      const endTime = Date.now()
+      duration.value = (endTime - startTime) / 1000
+    }
+  )
+}
+
+// 下载
+const download = () => {
+  wordCloud.exportCanvas()
 }
 
 onMounted(() => {
@@ -86,6 +104,13 @@ onMounted(() => {
           type="textarea"
           placeholder="一行代表一个词，词和权重用空格分隔"
         />
+        <h3>渲染方式</h3>
+        <div class="row">
+          <el-radio-group v-model="renderType">
+            <el-radio-button label="DOM">DOM</el-radio-button>
+            <el-radio-button label="Canvas">Canvas</el-radio-button>
+          </el-radio-group>
+        </div>
         <h3>旋转</h3>
         <div class="row">
           <el-radio-group v-model="rotateType">
@@ -128,8 +153,8 @@ onMounted(() => {
             </el-radio-button>
           </el-radio-group>
         </div>
-        <h3>动画</h3>
-        <div class="row">
+        <h3 v-if="renderType === 'DOM'">动画</h3>
+        <div class="row" v-if="renderType === 'DOM'">
           <el-select v-model="transition">
             <el-option
               v-for="item in transitionList"
@@ -167,6 +192,13 @@ onMounted(() => {
       </div>
     </div>
     <div class="content">
+      <el-button
+        v-if="renderType === 'Canvas'"
+        type="primary"
+        style="position: absolute; left: 10px; top: 10px"
+        @click="download"
+        >下载</el-button
+      >
       <div class="wordCloud" ref="el">
         <!-- <div
       class="wordItemDot"
@@ -256,6 +288,7 @@ onMounted(() => {
     width: 100%;
     height: 100%;
     padding: 50px;
+    position: relative;
 
     .wordCloud {
       width: 100%;

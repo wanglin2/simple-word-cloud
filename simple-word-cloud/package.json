@@ -1,6 +1,6 @@
 {
   "name": "simple-word-cloud",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "一个简单的词云库",
   "main": "index.js",
   "scripts": {

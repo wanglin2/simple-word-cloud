@@ -55,6 +55,7 @@ const wordCloud = new SimpleWordCloud(options)
 | fontSizeScale       | Number           | 1 / minFontSize           | 计算时文字整体的缩小比例，用于加快计算速度，一般是0-1之间的小数，如果你没有非常清楚该配置的功能，那么请不要修改 |
 | transition          | String           | all 0.5s ease             | 文本元素过渡动画，css的transition属性                        |
 | smallWeightInCenter | Boolean          | false                     | 按权重从小到大的顺序渲染，默认是按权重从大到小进行渲染       |
+| onClick（v1.0.1+）  | Function         |                           | 监听词云的点击事件。接收一个参数，代表被点击的词云数据。       |
 
 ##### 默认颜色列表
 
@@ -109,11 +110,29 @@ const wordCloud = new SimpleWordCloud(options)
 
 
 
-#### render(*words*, done = () => {})
+#### render(words, done = () => {})
 
-计算并直接渲染到容器内。
+计算并使用DOM方式直接渲染到容器内。
 
+#### renderUseCanvas(words, done = () => {})
 
+> v1.0.1+
+
+计算并使用Canvas方式直接渲染到容器内。
+
+#### exportCanvas(isDownload = true, fileName = 'wordCloud')
+
+> v1.0.1+
+
+- `isDownload`：是否直接触发下载，为false则返回data:URL数据
+
+导出画布为图片，只有当使用renderUseCanvas方法渲染时才有效。
+
+#### clear()
+
+> v1.0.1+
+
+清除渲染的数据。
 
 #### updateOption(options)
 

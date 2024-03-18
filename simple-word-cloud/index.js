@@ -1,5 +1,11 @@
 import WordItem from './src/WordItem'
-import { getFontSize, getTextBoundingRect, createRandom } from './src/utils'
+import {
+  getFontSize,
+  getTextBoundingRect,
+  createRandom,
+  joinFontStr,
+  downloadFile
+} from './src/utils'
 import { addToMap, getPosition, getBoundingRect, clear } from './src/compute'
 
 // 词云类
@@ -17,6 +23,9 @@ class WordCloud {
     this.updateOption(rest)
     // 文本元素复用列表
     this.wordItemElList = []
+    // canvas
+    this.canvas = null
+    this.renderCtx = null
   }
 
   // 更新容器大小
@@ -44,7 +53,8 @@ class WordCloud {
     space,
     colorList,
     transition,
-    smallWeightInCenter
+    smallWeightInCenter,
+    onClick
   }) {
     // 字号大小
     this.minFontSize = minFontSize || 12
@@ -69,6 +79,10 @@ class WordCloud {
     this.transition = transition || 'all 0.5s ease'
     // 按权重从小到大的顺序渲染，默认是按权重从大到小进行渲染
     this.smallWeightInCenter = smallWeightInCenter || false
+    // 点击事件
+    this.onClick = onClick || null
+    // 当前渲染的列表
+    this.curRenderList = []
   }
 
   // 创建旋转角度
@@ -138,9 +152,104 @@ class WordCloud {
     done(wordItemList)
   }
 
-  // 计算并直接渲染到容器内
+  // 计算并使用canvas渲染到容器内
+  renderUseCanvas(words, done = () => {}) {
+    if (!this.canvas) {
+      this.canvas = document.createElement('canvas')
+      this.canvas.width = this.elWidth
+      this.canvas.height = this.elHeight
+      this.el.appendChild(this.canvas)
+      this.renderCtx = this.canvas.getContext('2d')
+      this.canvas.addEventListener('click', e => {
+        this.onCanvasClick(e)
+      })
+    }
+    this.renderCtx.clearRect(0, 0, this.elWidth, this.elHeight)
+    this.run(words, list => {
+      this.curRenderList = list
+      list.forEach(item => {
+        this.renderCtx.save()
+        this.renderCtx.font = joinFontStr(item.fontStyle)
+        this.renderCtx.fillStyle = item.color
+        if (item.rotate === 0) {
+          this.renderCtx.textBaseline = 'top'
+          this.renderCtx.fillText(item.text, item.left, item.top)
+        } else {
+          const cx = item.left + item.width / 2
+          const cy = item.top + item.height / 2
+          this.renderCtx.translate(cx, cy)
+          this.renderCtx.textAlign = 'center'
+          this.renderCtx.textBaseline = 'middle'
+          this.renderCtx.rotate((item.rotate * Math.PI) / 180)
+          this.renderCtx.fillText(item.text, 0, 0)
+        }
+        this.renderCtx.restore()
+      })
+      done(list)
+    })
+  }
+
+  // Canvas的点击事件
+  onCanvasClick(e) {
+    const { left, top } = this.canvas.getBoundingClientRect()
+    const x = e.clientX - left
+    const y = e.clientY - top
+    let res = null
+    for (let i = 0; i < this.curRenderList.length; i++) {
+      const item = this.curRenderList[i]
+      this.renderCtx.save()
+      this.renderCtx.font = joinFontStr(item.fontStyle)
+      this.renderCtx.fillStyle = item.color
+      this.renderCtx.textBaseline = 'top'
+      this.renderCtx.beginPath()
+      if (item.rotate === 0) {
+        this.renderCtx.rect(item.left, item.top, item.width, item.height)
+      } else {
+        const textSize = getTextBoundingRect({
+          text: item.text,
+          fontStyle: item.fontStyle,
+          space: item.space
+        })
+        const cx = item.left + item.width / 2
+        const cy = item.top + item.height / 2
+        this.renderCtx.translate(cx, cy)
+        this.renderCtx.rotate((item.rotate * Math.PI) / 180)
+        this.renderCtx.rect(
+          -textSize.width / 2,
+          -textSize.height / 2,
+          textSize.width,
+          textSize.height
+        )
+      }
+      this.renderCtx.closePath()
+      this.renderCtx.restore()
+      const isIn = this.renderCtx.isPointInPath(x, y)
+      if (isIn) {
+        res = item
+        break
+      }
+    }
+    if (res && this.onClick) {
+      this.onClick(res)
+    }
+  }
+
+  // 导出画布，只有当使用renderUseCanvas方法渲染时才有效
+  // isDownload：是否直接触发下载，为false则返回data:URL数据
+  exportCanvas(isDownload = true, fileName = 'wordCloud') {
+    if (!this.canvas) return null
+    const res = this.canvas.toDataURL()
+    if (isDownload) {
+      downloadFile(res, fileName)
+    } else {
+      return res
+    }
+  }
+
+  // 计算并使用DOM直接渲染到容器内
   render(words, done = () => {}) {
     this.run(words, list => {
+      this.curRenderList = []
       list.forEach((item, index) => {
         const exist = this.wordItemElList[index]
         let wrap = null
@@ -168,6 +277,9 @@ class WordCloud {
           this.wordItemElList.push({
             wrap,
             inner
+          })
+          wrap.addEventListener('click', () => {
+            if (this.onClick) this.onClick(item)
           })
           this.el.appendChild(wrap)
         }
@@ -197,6 +309,19 @@ class WordCloud {
       }
       done(list)
     })
+  }
+
+  // 清除渲染
+  clear() {
+    this.curRenderList = []
+    if (this.canvas) {
+      this.el.removeChild(this.canvas)
+      this.canvas = null
+      this.renderCtx = null
+    } else {
+      this.el.innerHTML = ''
+      this.wordItemElList = []
+    }
   }
 
   // 计算文本的位置

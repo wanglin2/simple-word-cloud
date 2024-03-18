@@ -130,7 +130,7 @@ export const getFontSize = (
 }
 
 // 计算旋转后的矩形的宽高
-export const getRotateBoundingRect = (width, height, rotate) => {
+export const getRotateBoundingRect = (width, height, rotate = 0) => {
   const rad = degToRad(rotate)
   const w = width * Math.abs(Math.cos(rad)) + height * Math.abs(Math.sin(rad))
   const h = width * Math.abs(Math.sin(rad)) + height * Math.abs(Math.cos(rad))
@@ -148,4 +148,12 @@ export const degToRad = deg => {
 // 返回一个随机整数
 export const createRandom = (min, max) => {
   return min + Math.floor(Math.random() * (max - min))
+}
+
+//  下载文件
+export const downloadFile = (file, fileName) => {
+  let a = document.createElement('a')
+  a.href = file
+  a.download = fileName
+  a.click()
 }
